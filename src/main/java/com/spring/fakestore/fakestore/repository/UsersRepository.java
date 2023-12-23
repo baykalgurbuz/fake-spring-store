@@ -74,6 +74,13 @@ public class UsersRepository {
         paramMap.put("ID",id );
         return namedParameterJdbcTemplate.update(sql, paramMap) == 1;
     }
+    public boolean update(long id)
+    {
+        String sql = "delete from \"public\".\"USERS\" where \"id\" = :ID";
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("ID",id );
+        return namedParameterJdbcTemplate.update(sql, paramMap) == 1;
+    }
 
 
 }
