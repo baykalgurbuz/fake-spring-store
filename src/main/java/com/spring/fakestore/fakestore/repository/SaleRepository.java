@@ -85,11 +85,5 @@ public class SaleRepository {
         return namedParameterJdbcTemplate.update(sql,map);
 
     }
-    public String deneme(int price){
-        String sql="";
-        HashMap<String,Object> map = new HashMap<>();
-        map.put("Price",price);
-        return "deneme";
 
-    }
 }
