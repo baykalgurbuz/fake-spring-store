@@ -25,8 +25,8 @@ public class ProposalRepository {
         return jdbcTemplate.query(sql, BeanPropertyRowMapper.newInstance(Proposal.class));
 
     }
-    public List<Proposal>getById(long id){
-        String sql=;
+    public Proposal getById(long id){
+        String sql="";
         HashMap<String,Object> map= new HashMap<>();
         map.put("id",id);
         return namedParameterJdbcTemplate.queryForObject(sql,map,BeanPropertyRowMapper.newInstance(Proposal.class));
@@ -45,7 +45,6 @@ public class ProposalRepository {
         map.put("Note",note);
         return namedParameterJdbcTemplate.queryForObject(sql,map, BeanPropertyRowMapper.newInstance(Proposal.class));
     }
-    // UPDATE FONKSİYONLARI
     public boolean UpdatePrice(Proposal proposal){
         String sql="";
         HashMap<String,Object> map =new HashMap<>();
