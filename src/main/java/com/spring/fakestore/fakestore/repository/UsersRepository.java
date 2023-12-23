@@ -1,12 +1,18 @@
 package com.spring.fakestore.fakestore.repository;
 
+import com.spring.fakestore.fakestore.models.Role;
 import com.spring.fakestore.fakestore.models.Users;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Repository;
 
+<<<<<<< HEAD
+import java.util.ArrayList;
+=======
+>>>>>>> 047f4a05506c4c6bc8acbcad6fb7791d59fcffaa
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +32,23 @@ public class UsersRepository {
     {
         return jdbcTemplate.query("select * from \"public\".\"USERS\" order by \"id\" asc", BeanPropertyRowMapper.newInstance(Users.class));
     }
+<<<<<<< HEAD
+    public List<GrantedAuthority> getUserRoles(String username)
+    {
+        String sql = "SELECT \"authority\" FROM \"public\".\"authorities\" where \"username\" = :USERNAME";
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("USERNAME", username);
+        List<String> liste = namedParameterJdbcTemplate.queryForList(sql, paramMap, String.class);
+
+
+        List<GrantedAuthority> roles = new ArrayList<>();
+        for (String role : liste)
+        {
+            roles.add(new Role(role));
+        }
+        return roles;
+    }
+=======
     public Users getById(long id)
     {
         Users users=null;
@@ -53,4 +76,5 @@ public class UsersRepository {
         return namedParameterJdbcTemplate.update(sql, paramMap) == 1;
     }
 
+>>>>>>> 047f4a05506c4c6bc8acbcad6fb7791d59fcffaa
 }
