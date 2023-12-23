@@ -1,34 +1,33 @@
 package com.spring.fakestore.fakestore.controllers;
 
-
+import com.spring.fakestore.fakestore.models.Service;
 import com.spring.fakestore.fakestore.models.Users;
+import com.spring.fakestore.fakestore.repository.ServiceRepository;
 import com.spring.fakestore.fakestore.repository.UsersRepository;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
 @RestController
-@RequestMapping(path = "users")
-public class UsersController {
-    private UsersRepository usersRepository;
+@RequestMapping(path = "service")
+public class ServiceController {
+    private ServiceRepository serviceRepository;
 
-    public UsersController(UsersRepository usersRepository) {
-        this.usersRepository = usersRepository;
+    public ServiceController(ServiceRepository serviceRepository) {
+        this.serviceRepository = serviceRepository;
     }
+
     @GetMapping(path = "getall",produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Users>> getall()
+    public ResponseEntity<List<Service>> getall()
     {
-        return ResponseEntity.ok(usersRepository.getAll());
+        return ResponseEntity.ok(serviceRepository.getAll());
     }
     @GetMapping(path = "getbyid/{id}",produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Users> getbyid(@PathVariable(name = "id") long id)
+    public ResponseEntity<Service> getbyid(@PathVariable(name = "id") long id)
     {
         try{
-            return ResponseEntity.ok(usersRepository.getById(id));
+            return ResponseEntity.ok(serviceRepository.getById(id));
         }
         catch (Exception e)
         {
@@ -38,11 +37,11 @@ public class UsersController {
 
     }
     @PostMapping(path = "save",consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> save(@RequestBody Users users)
+    public ResponseEntity<String> save(@RequestBody Service service)
     {
         try
         {
-            boolean result=usersRepository.save(users);
+            boolean result=serviceRepository.save(service);
             if (result)
             {
                 return  ResponseEntity.ok("Saved");
@@ -62,7 +61,7 @@ public class UsersController {
     {
         try
         {
-            boolean result=usersRepository.deleteById(id);
+            boolean result=serviceRepository.deleteById(id);
             if (result)
             {
                 return  ResponseEntity.ok("DELETED");
@@ -78,11 +77,11 @@ public class UsersController {
         }
     }
     @PostMapping(path = "update",consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> update(@RequestBody Users users)
+    public ResponseEntity<String> update(@RequestBody Service service)
     {
         try
         {
-            boolean result = usersRepository.update(users);
+            boolean result = serviceRepository.update(service);
             if (result)
             {
                 return ResponseEntity.ok("Updated");

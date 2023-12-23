@@ -7,6 +7,16 @@ public class Users {
     private String password;
     private String role;
 
+    public Users() {
+    }
+
+    public Users(String username, String email, String password, String role) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+    }
+
     public long getId() {
         return id;
     }
