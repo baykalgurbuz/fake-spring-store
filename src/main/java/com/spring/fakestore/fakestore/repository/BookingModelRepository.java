@@ -10,6 +10,8 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,6 +32,10 @@ public class BookingModelRepository {
     {
         return jdbcTemplate.query("select * from \"public\".\"BOOKING\" order by \"id\" asc", BeanPropertyRowMapper.newInstance(BookingModel.class));
     }
+    public List<BookingModel> getAllWithDate()
+    {
+        return jdbcTemplate.query("select * from \"public\".\"BOOKING\" order by \"booking_date\" desc", BeanPropertyRowMapper.newInstance(BookingModel.class));
+    }
     public BookingModel getById(long id)
     {
         BookingModel bookingModel=null;
@@ -39,15 +45,51 @@ public class BookingModelRepository {
         bookingModel = namedParameterJdbcTemplate.queryForObject(sql, paramMap, BeanPropertyRowMapper.newInstance(BookingModel.class));
         return bookingModel;
     }
-    public boolean save(BookingModel bookingModel)
+    public Long save(BookingModel bookingModel)
     {
-        String sql = "insert into \"public\".\"BOOKING\" (\"note\", \"booking_date\", \"status\",\"service_id\",\"user_id\") values (:NOTE, :BOOKING_DATE, :STATUS,:SERVICE_ID,USER_ID)";
+        LocalDateTime localDate =LocalDateTime.now();
+        Long durationTime =getDuration();
+
+        String sql = "insert into \"public\".\"BOOKING\" (\"id\",\"note\", \"booking_date\", \"status\",\"service_id\",\"user_id\") values (:ID,:NOTE, :BOOKING_DATE, 'bekliyor',:SERVICE_ID,:USER_ID)";
         Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("ID", lastItem() + 1);
         paramMap.put("NOTE", bookingModel.getNote());
-        paramMap.put("BOOKING_DATE",bookingModel.getBooking_date() );
-        paramMap.put("STATUS",bookingModel.getStatus() );
-        paramMap.put("SERVICE_ID",bookingModel.getService_id());
-        return namedParameterJdbcTemplate.update(sql, paramMap) == 1;
+        paramMap.put("SERVICE_ID", bookingModel.getService_id());
+        paramMap.put("USER_ID", bookingModel.getUser_id());
+
+
+        String serviceDurationSql = "SELECT duration FROM \"SERVICE\" WHERE id = "+bookingModel.getService_id();
+        Long serviceDuration = jdbcTemplate.queryForObject(serviceDurationSql, Long.class);
+        if (durationTime+serviceDuration<=10)
+        {
+            paramMap.put("BOOKING_DATE", localDate);
+        }
+        else {
+            paramMap.put("BOOKING_DATE", localDate.plusDays(1));
+        }
+        int rowsAffected = namedParameterJdbcTemplate.update(sql, paramMap);
+
+        if (rowsAffected > 0) {
+            return lastItem() + 1;
+        } else {
+            return null;
+        }
+    }
+    public Long lastItem()
+    {
+        String lastIdSql = "SELECT id FROM \"public\".\"BOOKING\" ORDER BY \"id\" DESC LIMIT 1";
+        Long lastId = jdbcTemplate.queryForObject(lastIdSql, Long.class);
+        return lastId;
+    }
+    public Long getDuration()
+    {
+        String totalDurationSql = "SELECT SUM(\"SERVICE\".duration)\n" +
+                "FROM \"public\".\"BOOKING\"\n" +
+                "INNER JOIN \"public\".\"SERVICE\" ON \"public\".\"BOOKING\".\"service_id\" = \"public\".\"SERVICE\".\"id\"\n" +
+                "WHERE \"public\".\"BOOKING\".\"booking_date\" = CURRENT_DATE\n" +
+                "GROUP BY \"public\".\"BOOKING\".\"booking_date\"";
+        Long lastId = jdbcTemplate.queryForObject(totalDurationSql, Long.class);
+        return lastId;
     }
     public boolean deleteById(long id)
     {
@@ -65,6 +107,22 @@ public class BookingModelRepository {
         paramMap.put("BOOKING_DATE",bookingModel.getBooking_date() );
         paramMap.put("STATUS",bookingModel.getStatus() );
         paramMap.put("SERVICE_ID",bookingModel.getService_id());
+        return namedParameterJdbcTemplate.update(sql, paramMap) == 1;
+    }
+    public boolean updateStatus(long id)
+    {
+        String sql = "UPDATE public.\"BOOKING\" SET \"status\"=:STATUS WHERE \"id\"=:ID";
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("ID",id );
+        paramMap.put("STATUS","isleme alındı");
+        return namedParameterJdbcTemplate.update(sql, paramMap) == 1;
+    }
+    public boolean completeStatus(long id)
+    {
+        String sql = "UPDATE public.\"BOOKING\" SET \"status\"=:STATUS WHERE \"id\"=:ID";
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("ID",id );
+        paramMap.put("STATUS","tamamlandı");
         return namedParameterJdbcTemplate.update(sql, paramMap) == 1;
     }
 
