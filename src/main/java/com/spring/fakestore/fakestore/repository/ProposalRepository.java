@@ -45,7 +45,7 @@ public class ProposalRepository {
         map.put("Note",note);
         return namedParameterJdbcTemplate.queryForObject(sql,map, BeanPropertyRowMapper.newInstance(Proposal.class));
     }
-    public boolean UpdatePrice(Proposal proposal){
+    public boolean Update(Proposal proposal){
         String sql="";
         HashMap<String,Object> map =new HashMap<>();
         map.put("Price",proposal.getPrice());

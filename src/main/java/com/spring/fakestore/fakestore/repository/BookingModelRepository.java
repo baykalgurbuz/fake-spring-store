@@ -1,7 +1,6 @@
 package com.spring.fakestore.fakestore.repository;
 
 import com.spring.fakestore.fakestore.models.BookingModel;
-import com.spring.fakestore.fakestore.models.Role;
 import com.spring.fakestore.fakestore.models.Users;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
