@@ -1,13 +1,26 @@
 package com.spring.fakestore.fakestore.models;
 
-public class Users {
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+public class Users implements GrantedAuthority {
     private long id;
     private String username;
     private String email;
     private String password;
     private String role;
 
-    public Users() {
+    public Users (){
+
+    }
+    public Users(String role) {
+
+    }
+    // Roller için
+    @Override
+    public String getAuthority() {
+        return role;
     }
 
     public Users(String username, String email, String password, String role) {
@@ -15,6 +28,12 @@ public class Users {
         this.email = email;
         this.password = password;
         this.role = role;
+    }
+    private static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+    public void setPassword(String password) {
+        // Şifreyi hash'le ve ayarla
+        this.password = passwordEncoder.encode(password);
     }
 
     public long getId() {
@@ -45,9 +64,9 @@ public class Users {
         return password;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+//    public void setPassword(String password) {
+//        this.password = password;
+//    }
 
     public String getRole() {
         return role;
@@ -67,4 +86,6 @@ public class Users {
                 ", role='" + role + '\'' +
                 '}';
     }
+
+
 }

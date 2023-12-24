@@ -1,6 +1,5 @@
 package com.spring.fakestore.fakestore.repository;
 
-import com.spring.fakestore.fakestore.models.Role;
 import com.spring.fakestore.fakestore.models.Users;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -43,9 +42,17 @@ public class UsersRepository {
         List<GrantedAuthority> roles = new ArrayList<>();
         for (String role : liste)
         {
-            roles.add(new Role(role));
+            roles.add(new Users(role));
         }
         return roles;
+    }
+
+    public Users getByUsername(String username){
+        String sql="select * from \"public\".\"users\" where \"username\" = :Username";
+        Map<String,Object> paramMap = new HashMap<>();
+        paramMap.put("Username", username);
+        return namedParameterJdbcTemplate.queryForObject(sql,paramMap,BeanPropertyRowMapper.newInstance(Users.class));
+
     }
 
     public Users getById(long id)
