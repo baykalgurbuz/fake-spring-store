@@ -65,6 +65,7 @@ public class BookingModelRepository {
             paramMap.put("BOOKING_DATE", localDate);
         }
         else {
+
             paramMap.put("BOOKING_DATE", localDate.plusDays(1));
         }
         int rowsAffected = namedParameterJdbcTemplate.update(sql, paramMap);
@@ -88,8 +89,8 @@ public class BookingModelRepository {
                 "INNER JOIN \"public\".\"SERVICE\" ON \"public\".\"BOOKING\".\"service_id\" = \"public\".\"SERVICE\".\"id\"\n" +
                 "WHERE \"public\".\"BOOKING\".\"booking_date\" = CURRENT_DATE\n" +
                 "GROUP BY \"public\".\"BOOKING\".\"booking_date\"";
-        Long lastId = jdbcTemplate.queryForObject(totalDurationSql, Long.class);
-        return lastId;
+        Long serviceDuration = jdbcTemplate.queryForObject(totalDurationSql, Long.class);
+        return serviceDuration;
     }
     public boolean deleteById(long id)
     {
