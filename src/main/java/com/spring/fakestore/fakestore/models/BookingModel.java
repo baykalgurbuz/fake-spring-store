@@ -1,12 +1,13 @@
 package com.spring.fakestore.fakestore.models;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 public class BookingModel {
     private long id;
     private String note;
 
-    private Date booking_date;
+    private LocalDateTime booking_date;
 
     private String status;
 
@@ -17,7 +18,7 @@ public class BookingModel {
     public BookingModel() {
     }
 
-    public BookingModel(String note, Date booking_date, String status, long service_id, long user_id) {
+    public BookingModel(String note, LocalDateTime booking_date, String status, long service_id, long user_id) {
         this.note = note;
         this.booking_date = booking_date;
         this.status = status;
@@ -41,11 +42,11 @@ public class BookingModel {
         this.note = note;
     }
 
-    public Date getBooking_date() {
+    public LocalDateTime getBooking_date() {
         return booking_date;
     }
 
-    public void setBooking_date(Date booking_date) {
+    public void setBooking_date(LocalDateTime booking_date) {
         this.booking_date = booking_date;
     }
 

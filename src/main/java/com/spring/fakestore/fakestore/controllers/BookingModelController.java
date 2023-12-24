@@ -23,6 +23,11 @@ public class BookingModelController {
     {
         return ResponseEntity.ok(bookingModelRepository.getAll());
     }
+    @GetMapping(path = "getallwithdate",produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<BookingModel>> getallwithdate()
+    {
+        return ResponseEntity.ok(bookingModelRepository.getAllWithDate());
+    }
     @GetMapping(path = "getbyid/{id}",produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<BookingModel> getbyid(@PathVariable(name = "id") long id)
     {
@@ -41,10 +46,11 @@ public class BookingModelController {
     {
         try
         {
-            boolean result=bookingModelRepository.save(bookingModel);
-            if (result)
+            Long savedId = bookingModelRepository.save(bookingModel);
+            String messages ="Saved -> Your booking id is ->"+bookingModelRepository.lastItem();
+            if (savedId != null)
             {
-                return  ResponseEntity.ok("Saved");
+                return  ResponseEntity.ok(messages);
             }
             else {
                 return  ResponseEntity.ok("UnSaved!");
@@ -82,6 +88,48 @@ public class BookingModelController {
         try
         {
             boolean result = bookingModelRepository.update(bookingModel);
+            if (result)
+            {
+                return ResponseEntity.ok("Updated");
+            }
+            else
+            {
+                return ResponseEntity.internalServerError().body("Not Updated");
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().body("Internal 500 error.");
+        }
+    }
+    @PutMapping(path = "updatestatus/{id}",consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> updateStatus(@PathVariable(name = "id") long id)
+    {
+        try
+        {
+            boolean result = bookingModelRepository.updateStatus(id);
+            if (result)
+            {
+                return ResponseEntity.ok("Updated");
+            }
+            else
+            {
+                return ResponseEntity.internalServerError().body("Not Updated");
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().body("Internal 500 error.");
+        }
+    }
+    @PutMapping(path = "completestatus/{id}",consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> completestatus(@PathVariable(name = "id") long id)
+    {
+        try
+        {
+            boolean result = bookingModelRepository.completeStatus(id);
             if (result)
             {
                 return ResponseEntity.ok("Updated");
