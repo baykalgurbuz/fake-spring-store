@@ -23,8 +23,7 @@ public class UserService  implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException
     {
         System.err.println("DB 'ye bakılıyor");
-        // kendi user sınıfımı spring security 'nin istediği user sınıfına dönüştürmek
-        // için
+        // kendi user sınıfımı spring security 'nin istediği user sınıfına dönüştürmek için
         Users myUser = userRepository.getByUsername(username);
 
         User.UserBuilder builder = org.springframework.security.core.userdetails.User.withUsername(myUser.getUsername());

@@ -1,32 +1,26 @@
 package com.spring.fakestore.fakestore.security;
 
 import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.spring.fakestore.fakestore.models.Users;
+import com.spring.fakestore.fakestore.models.Role;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import javax.management.relation.Role;
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
-public class JWTAuthorizationFilter  extends OncePerRequestFilter {
-
-
+public class JWTAuthorizationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-
-        //Gelen Tokenın Header Kısmı
         String token = request.getHeader("Authorization");
         if (token != null)
         {
@@ -38,12 +32,8 @@ public class JWTAuthorizationFilter  extends OncePerRequestFilter {
                     // user-USER
                     // admin-ADMIN
                     String username = mytoken.split("-")[0];
-                    List<String> roleNames = Arrays.asList(mytoken.split("-")[1].split(","));
-                    Users user = new Users();
-                    user.setRole("ROLE_" + roleNames.get(0)); // assuming you want the first role
-                    List<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(user.getRole()));
-
-                    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, null, authorities);
+                    List<Role> auth = Arrays.asList(mytoken.split("-")[1].split(",")).stream().map(item -> new Role(item)).collect(Collectors.toList());
+                    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, null, auth);
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
                     filterChain.doFilter(request, response);
@@ -63,5 +53,4 @@ public class JWTAuthorizationFilter  extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
         }
     }
-
 }

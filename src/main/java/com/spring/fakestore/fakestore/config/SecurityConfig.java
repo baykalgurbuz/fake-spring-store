@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,43 +25,25 @@ import java.util.List;
 @Configuration
 public class SecurityConfig  {
 
-    @Bean
-    public PasswordEncoder passwordEncoder(){
 
-        return new BCryptPasswordEncoder();
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, @Autowired AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        http.authorizeHttpRequests(request -> request
+                        .requestMatchers("/booking/**", "/buy/**").hasAuthority("USER")
+                        .requestMatchers("/admin/**").hasAuthority("ADMIN")
+                        .anyRequest().permitAll())
+                .csrf(AbstractHttpConfigurer::disable)
+                .cors(AbstractHttpConfigurer::disable)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilter(new JWTAuthenticationFilter(authenticationConfiguration.getAuthenticationManager()))
+                .addFilterAfter(new JWTAuthorizationFilter(), JWTAuthenticationFilter.class);
+
+        return http.build();
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, @Autowired AuthenticationConfiguration authenticationConfiguration) throws Exception{
-        http.authorizeHttpRequests(x->x
-                .requestMatchers(HttpMethod.GET).hasRole("ADMIN")
-               .requestMatchers("/admin/**").hasRole("ADMIN")
-               .anyRequest().authenticated());
-        http.csrf(customizer -> customizer.disable());
-
-
-//        http.exceptionHandling(x->x.authenticationEntryPoint(unauthorizedHandler));
-
-        http.sessionManagement(x->x.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-        http.addFilter(new JWTAuthenticationFilter(authenticationConfiguration.getAuthenticationManager()));
-        http.addFilterAfter(new JWTAuthorizationFilter(),JWTAuthenticationFilter.class);
-
-//        CorsConfigurationSource corsconsfigurationsource = new CorsConfigurationSource()
-//        {
-//            @Override
-//            public CorsConfiguration getCorsConfiguration(HttpServletRequest request)
-//            {
-//                CorsConfiguration config = new CorsConfiguration();
-//                config.setAllowedHeaders(List.of(""));
-//                config.setAllowedOrigins(List.of(""));
-//                config.setAllowedMethods(List.of("*"));
-//                return config;
-//            }
-//        };
-//        http.cors(customizer -> customizer.configurationSource(corsconsfigurationsource));
-
-
-        return http.build();
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
 }

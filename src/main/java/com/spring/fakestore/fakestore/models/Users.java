@@ -4,30 +4,20 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-public class Users implements GrantedAuthority {
+public class Users {
     private long id;
     private String username;
     private String email;
     private String password;
-    private String role;
 
     public Users (){
 
     }
-    public Users(String role) {
 
-    }
-    // Roller için
-    @Override
-    public String getAuthority() {
-        return role;
-    }
-
-    public Users(String username, String email, String password, String role) {
+    public Users(String username, String email, String password) {
         this.username = username;
         this.email = email;
         this.password = password;
-        this.role = role;
     }
     private static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
@@ -64,17 +54,6 @@ public class Users implements GrantedAuthority {
         return password;
     }
 
-//    public void setPassword(String password) {
-//        this.password = password;
-//    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
 
     @Override
     public String toString() {
@@ -83,9 +62,6 @@ public class Users implements GrantedAuthority {
                 ", username='" + username + '\'' +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
-                ", role='" + role + '\'' +
                 '}';
     }
-
-
 }
