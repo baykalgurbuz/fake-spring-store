@@ -2,11 +2,13 @@ package com.spring.fakestore.fakestore.repository;
 
 import com.spring.fakestore.fakestore.models.BookingModel;
 import com.spring.fakestore.fakestore.models.Users;
+import net.sf.jsqlparser.expression.DateTimeLiteralExpression;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.security.core.GrantedAuthority;
+//import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -46,8 +48,10 @@ public class BookingModelRepository {
     }
     public Long save(BookingModel bookingModel)
     {
-        LocalDateTime localDate =LocalDateTime.now();
-        Long durationTime =getDuration();
+        LocalDate localDate =LocalDate.now();
+
+        Long durationTime =getDuration(localDate);
+
 
         String sql = "insert into \"public\".\"BOOKING\" (\"id\",\"note\", \"booking_date\", \"status\",\"service_id\",\"user_id\") values (:ID,:NOTE, :BOOKING_DATE, 'bekliyor',:SERVICE_ID,:USER_ID)";
         Map<String, Object> paramMap = new HashMap<>();
@@ -64,8 +68,20 @@ public class BookingModelRepository {
             paramMap.put("BOOKING_DATE", localDate);
         }
         else {
+            while (true) {
+                Long totalDuration = getDuration(localDate);
+                if (totalDuration == null) {
 
-            paramMap.put("BOOKING_DATE", localDate.plusDays(1));
+                    break;
+                }
+
+                if (totalDuration + serviceDuration > 10) {
+                    localDate = localDate.plusDays(1);
+                } else {
+                    break;
+                }
+            }
+            paramMap.put("BOOKING_DATE", localDate);
         }
         int rowsAffected = namedParameterJdbcTemplate.update(sql, paramMap);
 
@@ -81,16 +97,24 @@ public class BookingModelRepository {
         Long lastId = jdbcTemplate.queryForObject(lastIdSql, Long.class);
         return lastId;
     }
-    public Long getDuration()
+    public Long getDuration(LocalDate date)
     {
         String totalDurationSql = "SELECT SUM(\"SERVICE\".duration)\n" +
                 "FROM \"public\".\"BOOKING\"\n" +
                 "INNER JOIN \"public\".\"SERVICE\" ON \"public\".\"BOOKING\".\"service_id\" = \"public\".\"SERVICE\".\"id\"\n" +
-                "WHERE \"public\".\"BOOKING\".\"booking_date\" = CURRENT_DATE\n" +
+                "WHERE \"public\".\"BOOKING\".\"booking_date\" = ?\n" +
                 "GROUP BY \"public\".\"BOOKING\".\"booking_date\"";
-        Long serviceDuration = jdbcTemplate.queryForObject(totalDurationSql, Long.class);
-        return serviceDuration;
+        try{
+            Long serviceDuration = jdbcTemplate.queryForObject(totalDurationSql, Long.class,date);
+            return serviceDuration;
+        }
+        catch (EmptyResultDataAccessException e)
+        {
+            return null;
+        }
+
     }
+
     public boolean deleteById(long id)
     {
         String sql = "delete from \"public\".\"BOOKING\" where \"id\" = :ID";
