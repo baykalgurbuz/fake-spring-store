@@ -1,5 +1,6 @@
 package com.spring.fakestore.fakestore.repository;
 
+import com.spring.fakestore.fakestore.models.BookingModel;
 import com.spring.fakestore.fakestore.models.Proposal;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public class ProposalRepository {
@@ -21,16 +23,24 @@ public class ProposalRepository {
     }
     public List<Proposal> getAll(){
 
-        String sql="";
-        return jdbcTemplate.query(sql, BeanPropertyRowMapper.newInstance(Proposal.class));
+        return jdbcTemplate.query("select * from \"public\".\"PROPOSAL\" order by \"id\" asc", BeanPropertyRowMapper.newInstance(Proposal.class));
 
     }
     public Proposal getById(long id){
-        String sql="";
-        HashMap<String,Object> map= new HashMap<>();
-        map.put("id",id);
-        return namedParameterJdbcTemplate.queryForObject(sql,map,BeanPropertyRowMapper.newInstance(Proposal.class));
+        Proposal proposal=null;
+        String sql = "select * from \"public\".\"PROPOSAL\" where \"id\" = :ID";
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("ID", id);
+        return  namedParameterJdbcTemplate.queryForObject(sql, paramMap, BeanPropertyRowMapper.newInstance(Proposal.class));
 
+    }
+    public boolean updateStatus(long id)
+    {
+        String sql = "UPDATE public.\"PROPOSAL\" SET \"status\"=:STATUS WHERE \"id\"=:ID";
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("ID",id );
+        paramMap.put("STATUS",true);
+        return namedParameterJdbcTemplate.update(sql, paramMap) == 1;
     }
     public Proposal getByPrice(int price){
         String sql="";

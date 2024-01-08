@@ -4,7 +4,7 @@ public class Proposal {
 
     private long id;
 
-    private int note;
+    private String note;
 
     private int price;
 
@@ -17,8 +17,7 @@ public class Proposal {
     public Proposal() {
     }
 
-    public Proposal(long id, int note, int price, long user_id, String status, long product_id) {
-        this.id = id;
+    public Proposal(String note, int price, long user_id, String status, long product_id) {
         this.note = note;
         this.price = price;
         this.user_id = user_id;
@@ -30,12 +29,15 @@ public class Proposal {
         return id;
     }
 
+    public void setId(long id) {
+        this.id = id;
+    }
 
-    public int getNote() {
+    public String getNote() {
         return note;
     }
 
-    public void setNote(int note) {
+    public void setNote(String note) {
         this.note = note;
     }
 
@@ -75,7 +77,7 @@ public class Proposal {
     public String toString() {
         return "Proposal{" +
                 "id=" + id +
-                ", note=" + note +
+                ", note='" + note + '\'' +
                 ", price=" + price +
                 ", user_id=" + user_id +
                 ", status='" + status + '\'' +
