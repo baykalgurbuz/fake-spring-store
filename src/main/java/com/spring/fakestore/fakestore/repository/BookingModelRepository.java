@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 //import org.springframework.security.core.GrantedAuthority;
+
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -20,6 +21,7 @@ import java.util.Map;
 
 @Repository
 public class BookingModelRepository {
+
     private JdbcTemplate jdbcTemplate;
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
@@ -48,6 +50,7 @@ public class BookingModelRepository {
     }
     public Long save(BookingModel bookingModel)
     {
+
         LocalDate localDate =LocalDate.now();
 
         Long durationTime =getDuration(localDate);
@@ -63,6 +66,7 @@ public class BookingModelRepository {
 
         String serviceDurationSql = "SELECT duration FROM \"SERVICE\" WHERE id = "+bookingModel.getService_id();
         Long serviceDuration = jdbcTemplate.queryForObject(serviceDurationSql, Long.class);
+
         if (durationTime+serviceDuration<=10)
         {
             paramMap.put("BOOKING_DATE", localDate);
@@ -71,10 +75,8 @@ public class BookingModelRepository {
             while (true) {
                 Long totalDuration = getDuration(localDate);
                 if (totalDuration == null) {
-
                     break;
                 }
-
                 if (totalDuration + serviceDuration > 10) {
                     localDate = localDate.plusDays(1);
                 } else {
@@ -117,6 +119,7 @@ public class BookingModelRepository {
 
     public boolean deleteById(long id)
     {
+
         String sql = "delete from \"public\".\"BOOKING\" where \"id\" = :ID";
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("ID",id );

@@ -68,6 +68,7 @@ public class UsersRepository {
     {
         String sql = "insert into \"public\".\"USERS\" (\"username\", \"email\", \"password\",\"role\") values (:USERNAME, :EMAIL, :PASSWORD,:ROLE)";
         Map<String, Object> paramMap = new HashMap<>();
+
         paramMap.put("USERNAME", user.getUsername());
         paramMap.put("EMAIL", user.getEmail());
         paramMap.put("PASSWORD",user.getPassword() );
